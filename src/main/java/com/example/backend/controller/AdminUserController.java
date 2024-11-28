@@ -17,7 +17,7 @@ public class AdminUserController {
     private final UserService userService;
 
     // ユーザー一覧の取得
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserEntity> getAllUsers() {
@@ -25,7 +25,7 @@ public class AdminUserController {
     }
 
     // IDでユーザーを取得
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
@@ -35,7 +35,7 @@ public class AdminUserController {
     }
     
     // ユーザーの作成
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
@@ -44,7 +44,7 @@ public class AdminUserController {
     }
 
     // ユーザーの編集
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @RequestBody UserEntity user) {
@@ -53,7 +53,7 @@ public class AdminUserController {
     }
 
     // ユーザーの削除
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

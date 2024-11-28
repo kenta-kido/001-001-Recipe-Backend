@@ -26,7 +26,7 @@ import java.util.List;
 public class AuthController {
     
     private final AuthService authService; 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody @Validated LoginRequest request){
         return authService.attemptLogin(request.getEmail(), request.getPassword());
