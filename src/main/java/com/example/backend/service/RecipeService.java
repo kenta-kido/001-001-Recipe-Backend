@@ -49,7 +49,7 @@ public class RecipeService {
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
         
         recipe.setUser(recipeDetails.getUser());
-        recipe.setDescriptionId(recipeDetails.getDescriptionId());
+        recipe.setTitle(recipeDetails.getTitle());
         recipe.setTimestamp(recipeDetails.getTimestamp());
 
         return recipeRepository.save(recipe);

@@ -23,8 +23,11 @@ public class RecipeEntity {
     @JoinColumn(name = "user_id", nullable = false) // 外部キーを指定
     private UserEntity user; // リレーションとして設定
 
-    @Column(nullable = false)
-    private Long descriptionId; // Foreign Key for descriptions
+    @Column(nullable = false, length = 255)
+    private String title; // レシピのタイトル
+
+    // @Column(nullable = false)
+    // private Long descriptionId; // Foreign Key for descriptions
 
     @Column(nullable = false)
     private LocalDateTime timestamp; // Timestamp

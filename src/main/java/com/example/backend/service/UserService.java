@@ -22,9 +22,9 @@ public class UserService {
 
     @PostConstruct
     public void initAdminUser() {
-        if (userRepository.findByEmail("test@test.com").isEmpty()) {
+        if (userRepository.findByEmail("kenta@kenta.com").isEmpty()) {
             UserEntity admin = new UserEntity();
-            admin.setEmail("test@test.com");
+            admin.setEmail("kenta@kenta.com");
             admin.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード
             admin.setRole("ROLE_ADMIN");
             admin.setExtraInfo("Admin user");
