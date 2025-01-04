@@ -30,5 +30,15 @@ public class RecipeEntity {
     @Column(nullable = false)
     private LocalDateTime timestamp; // Timestamp
 
-    // Getters and Setters
+    // 保存前にタイムスタンプを現在時刻に設定
+    @PrePersist
+    protected void onCreate() {
+        this.timestamp = LocalDateTime.now();
+    }
+
+    // 必要なら更新時にもタイムスタンプを変更
+    @PreUpdate
+    protected void onUpdate() {
+        this.timestamp = LocalDateTime.now();
+    }
 }

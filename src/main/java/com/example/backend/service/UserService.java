@@ -30,6 +30,14 @@ public class UserService {
             admin.setExtraInfo("Admin user");
             userRepository.save(admin);
         }
+        if (userRepository.findByEmail("user@kenta.com").isEmpty()) {
+            UserEntity user = new UserEntity();
+            user.setEmail("user@kenta.com");
+            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード
+            user.setRole("ROLE_USER");
+            user.setExtraInfo("User");
+            userRepository.save(user);
+        }
     }
 
     public Optional<UserEntity> findByEmail(String email) {
