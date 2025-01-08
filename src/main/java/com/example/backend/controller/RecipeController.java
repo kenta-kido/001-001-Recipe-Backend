@@ -1,7 +1,9 @@
 package com.example.backend.controller;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.backend.entity.PhotoEntity;
 import com.example.backend.entity.RecipeEntity;
 import com.example.backend.security.JwtProperties;
+import com.example.backend.service.PhotoService;
 import com.example.backend.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,39 +27,8 @@ public class RecipeController {
     @Autowired
     private JwtProperties properties; // @Autowiredを追加
 
-
-    // @GetMapping("/decode-jwt")
-    // public ResponseEntity<String> decodeJwt(@RequestHeader("Authorization") String authHeader) {
-    //     try {
-    //         // Authorizationヘッダーからトークンを取得
-    //         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-    //             return ResponseEntity.status(401).body("Authorization header is missing or invalid.");
-    //         }
-    //         String token = authHeader.substring(7); // "Bearer "を削除
-
-    //         // トークンをデコード
-    //         DecodedJWT jwt = JWT.require(Algorithm.HMAC256(properties.getSecretKey()))
-    //                 .build()
-    //                 .verify(token);
-
-    //         // JWTのクレームを取得
-    //         String subject = jwt.getSubject(); // "sub"
-    //         String email = jwt.getClaim("e").asString(); // "e"
-    //         String roles = String.join(", ", jwt.getClaim("a").asList(String.class)); // "a"
-
-    //         // レスポンスにJWT情報を返す
-    //         return ResponseEntity.ok(
-    //                 "JWT Decoded:\n" +
-    //                         "Subject: " + subject + "\n" +
-    //                         "Email: " + email + "\n" +
-    //                         "Roles: " + roles
-    //         );
-
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(400).body("Invalid JWT: " + e.getMessage());
-    //     }
-    // }
-    
+    @Autowired
+    private PhotoService photoService;
 
     @GetMapping
     public List<RecipeEntity> getAllRecipes() {
@@ -71,33 +42,42 @@ public class RecipeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // 新しいエンドポイント: レシピIDからPhotoEntityを取得
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<PhotoEntity> getPhotoByRecipeId(@PathVariable Long id) {
+        return recipeService.getPhotoByRecipeId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<RecipeEntity> createRecipe(
-            @RequestHeader("Authorization") String authHeader, // Authorization ヘッダーを取得
+            @RequestHeader("Authorization") String authHeader,
             @RequestBody RecipeEntity recipe
     ) {
         try {
-            // Authorizationヘッダーからトークンを取得
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(401).body(null); // ヘッダーがない場合はエラー
+                return ResponseEntity.status(401).body(null);
             }
-            String token = authHeader.substring(7); // "Bearer "を削除
-    
-            // トークンをデコード
+            String token = authHeader.substring(7);
             DecodedJWT jwt = JWT.require(Algorithm.HMAC256(properties.getSecretKey()))
                     .build()
                     .verify(token);
     
-            // JWTからユーザーIDを取得
-            Long userId = Long.parseLong(jwt.getSubject()); // "sub" からIDを取得
+            Long userId = Long.parseLong(jwt.getSubject());
     
-            // レシピ作成処理
-            recipeService.createRecipe(recipe, userId);
+            // レシピに画像が含まれている場合、画像を保存
+            if (recipe.getPhoto() != null) {
+                PhotoEntity photo = recipe.getPhoto();
+                // `photoService` を呼び出して保存
+                photo = photoService.savePhoto(photo); 
+                recipe.setPhoto(photo); 
+            }
     
-            return ResponseEntity.ok(recipe);
-    
+            RecipeEntity createdRecipe = recipeService.createRecipe(recipe, userId);
+            return ResponseEntity.ok(createdRecipe);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(null); // トークンが無効な場合はエラー
+            return ResponseEntity.status(400).body(null);
         }
     }
     
@@ -106,6 +86,25 @@ public class RecipeController {
     public ResponseEntity<RecipeEntity> updateRecipe(@PathVariable Long id, @RequestBody RecipeEntity recipeDetails) {
         try {
             RecipeEntity updatedRecipe = recipeService.updateRecipe(id, recipeDetails);
+            return ResponseEntity.ok(updatedRecipe);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+        
+    @PutMapping("/{id}/photo")
+    public ResponseEntity<RecipeEntity> updateRecipePhoto(
+            @PathVariable Long id,
+            @RequestBody PhotoEntity photo
+    ) {
+        try {
+            RecipeEntity recipe = recipeService.getRecipeById(id)
+                    .orElseThrow(() -> new RuntimeException("Recipe not found"));
+            
+            // 新しい画像を設定
+            recipe.setPhoto(photo);
+
+            RecipeEntity updatedRecipe = recipeService.updateRecipe(id, recipe);
             return ResponseEntity.ok(updatedRecipe);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -121,4 +120,21 @@ public class RecipeController {
             return ResponseEntity.notFound().build();
         }
     }
+        
+    @DeleteMapping("/{id}/photo")
+    public ResponseEntity<RecipeEntity> deleteRecipePhoto(@PathVariable Long id) {
+        try {
+            RecipeEntity recipe = recipeService.getRecipeById(id)
+                    .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+            // 画像の関連を解除
+            recipe.setPhoto(null);
+
+            RecipeEntity updatedRecipe = recipeService.updateRecipe(id, recipe);
+            return ResponseEntity.ok(updatedRecipe);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.entity.DescriptionEntity;
+import com.example.backend.entity.PhotoEntity;
 import com.example.backend.service.DescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +40,24 @@ public class DescriptionController {
         return ResponseEntity.ok(updatedDescription);
     }
 
+    @PutMapping("/{id}/photo")
+    public ResponseEntity<DescriptionEntity> updateDescriptionPhoto(
+            @PathVariable Long id,
+            @RequestBody PhotoEntity newPhoto
+    ) {
+        DescriptionEntity updatedDescription = descriptionService.updateDescriptionPhoto(id, newPhoto);
+        return ResponseEntity.ok(updatedDescription);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDescription(@PathVariable Long id) {
         descriptionService.deleteDescription(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/photo")
+    public ResponseEntity<Void> deleteDescriptionPhoto(@PathVariable Long id) {
+        descriptionService.deleteDescriptionPhoto(id);
         return ResponseEntity.noContent().build();
     }
 }

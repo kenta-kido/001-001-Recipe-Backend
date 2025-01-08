@@ -17,15 +17,15 @@ public class PhotoController {
     private PhotoService photoService;
 
     // 特定の説明に関連するすべての写真を取得
-    @GetMapping
-    public List<PhotoEntity> getPhotosByDescriptionId(@PathVariable Long descriptionId) {
-        return photoService.getPhotosByDescriptionId(descriptionId);
-    }
+    // @GetMapping
+    // public List<PhotoEntity> getPhotosByDescriptionId(@PathVariable Long descriptionId) {
+    //     return photoService.getPhotosByDescriptionId(descriptionId);
+    // }
 
     // 特定の写真を取得
     @GetMapping("/{photoId}")
     public ResponseEntity<PhotoEntity> getPhotoById(@PathVariable Long descriptionId, @PathVariable Long photoId) {
-        PhotoEntity photo = photoService.getPhotoById(descriptionId, photoId);
+        PhotoEntity photo = photoService.getPhotoById(photoId);
         return ResponseEntity.ok(photo);
     }
 
@@ -35,7 +35,7 @@ public class PhotoController {
             @PathVariable Long descriptionId,
             @RequestBody PhotoEntity photo
     ) {
-        PhotoEntity createdPhoto = photoService.createPhoto(descriptionId, photo);
+        PhotoEntity createdPhoto = photoService.createPhoto(photo);
         return ResponseEntity.ok(createdPhoto);
     }
 
@@ -52,8 +52,8 @@ public class PhotoController {
 
     // 特定の写真を削除
     @DeleteMapping("/{photoId}")
-    public ResponseEntity<Void> deletePhoto(@PathVariable Long descriptionId, @PathVariable Long photoId) {
-        photoService.deletePhoto(descriptionId, photoId);
+    public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId) {
+        photoService.deletePhoto(photoId);
         return ResponseEntity.noContent().build();
     }
 }

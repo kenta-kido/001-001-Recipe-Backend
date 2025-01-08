@@ -20,7 +20,12 @@ public class RecipeEntity {
     @ManyToOne // Many Recipes belong to one User
     @JoinColumn(name = "user_id", nullable = false) // 外部キーを指定
     private UserEntity user; // リレーションとして設定
-
+    
+ 
+    @OneToOne // 1つのRecipeが1つのPhotoを持つ
+    @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
+    private PhotoEntity photo; // サムネイル画像用リレーション
+    
     @Column(nullable = false, length = 255)
     private String title; // レシピのタイトル
 

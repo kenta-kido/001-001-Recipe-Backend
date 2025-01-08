@@ -1,6 +1,10 @@
 package com.example.backend.service;
+import com.example.backend.entity.DescriptionEntity;
+import com.example.backend.entity.PhotoEntity;
 import com.example.backend.entity.RecipeEntity;
 import com.example.backend.entity.UserEntity;
+import com.example.backend.repository.DescriptionRepository;
+import com.example.backend.repository.PhotoRepository;
 import com.example.backend.repository.RecipeRepository;
 import com.example.backend.repository.UserRepository;
 
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RecipeService {
@@ -25,6 +30,11 @@ public class RecipeService {
 
     public Optional<RecipeEntity> getRecipeById(Long id) {
         return recipeRepository.findById(id);
+    }
+    
+    // レシピIDから対応するPhotoEntityを取得
+    public Optional<PhotoEntity> getPhotoByRecipeId(Long recipeId) {
+        return Optional.ofNullable(recipeRepository.findByRecipeId(recipeId).getPhoto());
     }
 
     public RecipeEntity createRecipe(RecipeEntity recipe, Long userId) {
@@ -54,10 +64,27 @@ public class RecipeService {
 
         return recipeRepository.save(recipe);
     }
+    
+    public RecipeEntity updateRecipePhoto(Long recipeId, PhotoEntity newPhoto) {
+        RecipeEntity recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+        recipe.setPhoto(newPhoto);
+        return recipeRepository.save(recipe);
+    }
 
     public void deleteRecipe(Long id) {
         RecipeEntity recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
         recipeRepository.delete(recipe);
     }
+
+    public RecipeEntity deleteRecipePhoto(Long recipeId) {
+        RecipeEntity recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+
+        recipe.setPhoto(null);
+        return recipeRepository.save(recipe);
+    }
+
 }

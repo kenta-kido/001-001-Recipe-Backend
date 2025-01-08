@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface DescriptionRepository extends JpaRepository<DescriptionEntity, Long> {
     List<DescriptionEntity> findByRecipeRecipeId(Long recipeId); // 特定のレシピに関連する説明を取得
-    boolean existsByRecipeAndSequence(RecipeEntity recipe, int sequence);
+    // boolean existsByRecipeAndSequence(RecipeEntity recipe, int sequence);
+    List<DescriptionEntity> findByPhotoPhotoId(Long photoId);
 }

@@ -18,6 +18,10 @@ public class DescriptionEntity {
     @JoinColumn(name = "recipe_id", nullable = false) // 外部キーを指定
     private RecipeEntity recipe; // リレーションとして設定
 
+    @OneToOne
+    @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
+    private PhotoEntity photo; // 説明用画像
+
     @Column(nullable = false)
     private String description; // 説明内容
 
