@@ -9,6 +9,7 @@ import com.example.backend.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.List;
 
 @Service
@@ -31,21 +32,27 @@ public class DescriptionService {
         return descriptionRepository.findByPhotoPhotoId(photoId); // photoId で検索
     }
 
-    public DescriptionEntity createDescription(Long recipeId, DescriptionEntity description) {
+    public Optional<PhotoEntity> getPhotoByDescriptionId(Long descriptionId) {
+        return Optional.ofNullable(descriptionRepository.findById(descriptionId)
+                .orElseThrow(() -> new RuntimeException("Description not found"))
+                .getPhoto());
+    }
+
+    public DescriptionEntity createDescriptionWithPhoto(Long recipeId, DescriptionEntity description) {
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
-
+    
         description.setRecipe(recipe);
-
-                // 画像保存処理
+    
+        // 写真が含まれている場合は保存
         if (description.getPhoto() != null) {
             PhotoEntity savedPhoto = photoService.savePhoto(description.getPhoto());
             description.setPhoto(savedPhoto);
         }
-        
+    
         return descriptionRepository.save(description);
     }
-
+    
     public DescriptionEntity updateDescription(Long id, DescriptionEntity descriptionDetails) {
         DescriptionEntity description = descriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Description not found"));
@@ -87,4 +94,5 @@ public class DescriptionService {
             descriptionRepository.save(description);
         }
     }
+    
 }

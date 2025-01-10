@@ -44,9 +44,9 @@ public class RecipeController {
 
     // 新しいエンドポイント: レシピIDからPhotoEntityを取得
     @GetMapping("/{id}/photo")
-    public ResponseEntity<PhotoEntity> getPhotoByRecipeId(@PathVariable Long id) {
+    public ResponseEntity<String> getPhotoByRecipeId(@PathVariable Long id) {
         return recipeService.getPhotoByRecipeId(id)
-                .map(ResponseEntity::ok)
+                .map(photo -> ResponseEntity.ok("data:image/jpeg;base64," + photo.getBinaryPhoto()))
                 .orElse(ResponseEntity.notFound().build());
     }
 

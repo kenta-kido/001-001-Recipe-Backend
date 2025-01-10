@@ -22,14 +22,26 @@ public class DescriptionController {
         return descriptionService.getDescriptionsByRecipeId(recipeId);
     }
 
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<String> getPhotoByDescriptionId(@PathVariable Long id) {
+        return descriptionService.getPhotoByDescriptionId(id)
+                .map(photo -> ResponseEntity.ok("data:image/jpeg;base64," + photo.getBinaryPhoto()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
     @PostMapping
     public ResponseEntity<DescriptionEntity> createDescription(
             @PathVariable Long recipeId,
             @RequestBody DescriptionEntity description
     ) {
-        DescriptionEntity createdDescription = descriptionService.createDescription(recipeId, description);
-        return ResponseEntity.ok(createdDescription);
+        try {
+            DescriptionEntity createdDescription = descriptionService.createDescriptionWithPhoto(recipeId, description);
+            return ResponseEntity.ok(createdDescription);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(null);
+        }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<DescriptionEntity> updateDescription(
