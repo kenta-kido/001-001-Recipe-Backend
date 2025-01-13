@@ -35,6 +35,28 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
+    @GetMapping("/userrecipe")
+    public ResponseEntity<List<RecipeEntity>> getUserRecipes(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body(null);
+            }
+            String token = authHeader.substring(7);
+            DecodedJWT jwt = JWT.require(Algorithm.HMAC256(properties.getSecretKey()))
+                    .build()
+                    .verify(token);
+    
+            Long userId = Long.parseLong(jwt.getSubject());
+    
+            List<RecipeEntity> userRecipes = recipeService.getRecipesByUserId(userId);
+            return ResponseEntity.ok(userRecipes);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<RecipeEntity> getRecipeById(@PathVariable Long id) {
         return recipeService.getRecipeById(id)

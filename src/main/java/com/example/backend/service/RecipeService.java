@@ -37,6 +37,10 @@ public class RecipeService {
         return Optional.ofNullable(recipeRepository.findByRecipeId(recipeId).getPhoto());
     }
 
+    public List<RecipeEntity> getRecipesByUserId(Long userId) {
+        return recipeRepository.findByUserId(userId);
+    }
+    
     public RecipeEntity createRecipe(RecipeEntity recipe, Long userId) {
         // データベースからユーザーを取得
         UserEntity user = userRepository.findById(userId)

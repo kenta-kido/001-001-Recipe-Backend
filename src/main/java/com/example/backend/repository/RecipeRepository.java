@@ -10,5 +10,6 @@ public interface RecipeRepository extends JpaRepository<RecipeEntity, Long> {
     boolean existsByTitle(String title);
     List<RecipeEntity> findByPhotoPhotoId(Long photoId);
         // レシピIDからPhotoEntityを取得
-        RecipeEntity findByRecipeId(Long recipeId);
+    RecipeEntity findByRecipeId(Long recipeId);
+    List<RecipeEntity> findByUserId(Long userId);    
 }
