@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,6 @@ public class UserEntity {
 
     // Getters and setters
     @JsonIgnore // シリアライズ時に無視
-    @OneToMany(mappedBy = "user") // リレーションの逆方向
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // リレーションの逆方向
     private List<RecipeEntity> recipes;
 }

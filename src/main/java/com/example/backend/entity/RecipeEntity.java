@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Getter
@@ -22,13 +27,17 @@ public class RecipeEntity {
     private UserEntity user; // リレーションとして設定
     
  
-    @OneToOne // 1つのRecipeが1つのPhotoを持つ
+    @OneToOne(cascade = CascadeType.ALL) // 1つのRecipeが1つのPhotoを持つ
     @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
     private PhotoEntity photo; // サムネイル画像用リレーション
     
     @Column(nullable = false, length = 255)
     private String title; // レシピのタイトル
 
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<DescriptionEntity> descriptions;
+    
     // @Column(nullable = false)
     // private Long descriptionId; // Foreign Key for descriptions
 

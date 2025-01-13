@@ -1,5 +1,7 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +18,10 @@ public class DescriptionEntity {
 
     @ManyToOne // Many Descriptions belong to one Recipe
     @JoinColumn(name = "recipe_id", nullable = false) // 外部キーを指定
+    @JsonBackReference
     private RecipeEntity recipe; // リレーションとして設定
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
     private PhotoEntity photo; // 説明用画像
 
