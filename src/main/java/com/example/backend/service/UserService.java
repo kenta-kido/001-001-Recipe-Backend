@@ -88,8 +88,7 @@ public class UserService {
             }
     
             // パスワード更新メッセージを追記
-            String updatedInfo = "Password updated on " +
-                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String updatedInfo = "Password updated by user";
             user.setExtraInfo(updatedInfo);
     
             // ユーザー情報を保存

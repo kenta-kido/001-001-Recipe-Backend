@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.PasswordChangeRequestDTO;
+import com.example.backend.dto.UserRequestDTO;
+import com.example.backend.dto.UserResponseDTO;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.service.UserService;
 import com.example.backend.security.UserPrincipal; 
@@ -21,82 +23,40 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    // @GetMapping("/info")
-    // public ResponseEntity<?> getUserInfo() {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     if (authentication == null || !authentication.isAuthenticated()) {
-    //         return ResponseEntity.status(401).body("User is not authenticated");
-    //     }
 
-    //     // Principal を UserPrincipal 型にキャスト
-    //     UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-    //     return ResponseEntity.ok().body("Authenticated user: " + userPrincipal.getEmail());
-    // }
-  
-    // @GetMapping("/auth-info")
-    // public ResponseEntity<?> getAuthInfo() {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     if (authentication == null || !authentication.isAuthenticated()) {
-    //         return ResponseEntity.status(401).body("User is not authenticated");
-    //     }
-    
-    //     // Principal を確認
-    //     Object principal = authentication.getPrincipal();
-    
-    //     // UserPrincipal にキャスト
-    //     if (principal instanceof UserPrincipal) {
-    //         UserPrincipal userPrincipal = (UserPrincipal) principal;
-    //         return ResponseEntity.ok().body("Authenticated Email: " + userPrincipal.getUsername() +
-    //                                         ", Password: " + userPrincipal.getPassword());
-    //     } else {
-    //         return ResponseEntity.badRequest().body("Principal is not of type UserPrincipal");
-    //     }
-    // }
+    @PutMapping("/email")
+    public ResponseEntity<?> updateUserInfo(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @Valid @RequestBody UserRequestDTO userRequestDTO) {
 
-    // @GetMapping("/auth-info2")
-    // public ResponseEntity<?> getAuthInfo2() {
-    //     // SecurityContext から Authentication を取得
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 自身の情報を取得
+        UserEntity userEntity = userService.getUserById(currentUser.getUserId())
+                                           .orElseThrow(() -> new RuntimeException("User not found"));
 
-    //     if (authentication == null || !authentication.isAuthenticated()) {
-    //         return ResponseEntity.status(401).body("User is not authenticated");
-    //     }
+        // 更新可能なフィールドのみを更新
+        if (userRequestDTO.getExtraInfo() != null) {
+            userEntity.setExtraInfo(userRequestDTO.getExtraInfo());
+        }
+        if (userRequestDTO.getEmail() != null && !userRequestDTO.getEmail().isEmpty()) {
+            userEntity.setEmail(userRequestDTO.getEmail());
+        }
 
-    //     // Principal を確認
-    //     Object principal = authentication.getPrincipal();
+        // 更新処理
+        UserEntity updatedUser = userService.saveUser(userEntity);
 
-    //     if (principal instanceof UserPrincipal) {
-    //         UserPrincipal userPrincipal = (UserPrincipal) principal;
-    //         return ResponseEntity.ok().body("Authenticated Email: " + userPrincipal.getEmail() +
-    //                 ", Password: " + userPrincipal.getPassword() +
-    //                 ", User ID: " + userPrincipal.getUserId());
-    //     }
+        // レスポンスDTOに変換して返す
+        return ResponseEntity.ok(convertToResponseDTO(updatedUser));
+    }
 
-    //     return ResponseEntity.ok().body("Principal is not of type UserPrincipal. Actual type: " + principal.getClass().getName());
-    // }
+    private UserResponseDTO convertToResponseDTO(UserEntity user) {
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(user.getId());
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setRole(user.getRole());
+        responseDTO.setExtraInfo(user.getExtraInfo());
+        return responseDTO;
+    }
 
-    // @GetMapping("/auth-info3")
-    // public ResponseEntity<?> getAuthInfo3() {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     if (authentication == null || !authentication.isAuthenticated()) {
-    //         return ResponseEntity.status(401).body("User is not authenticated");
-    //     }
-
-    //     // Principal を確認
-    //     Object principal = authentication.getPrincipal();
-    //     System.out.println("Principal Class: " + principal.getClass().getName());
-    //     System.out.println("Principal: " + principal);
-
-    //     if (principal instanceof UserPrincipal) {
-    //         UserPrincipal userPrincipal = (UserPrincipal) principal;
-    //         System.out.println("UserPrincipal - Email: " + userPrincipal.getUsername());
-    //         System.out.println("UserPrincipal - Password: " + userPrincipal.getPassword());
-    //         return ResponseEntity.ok().body("Authenticated Email: " + userPrincipal.getUsername() +
-    //                                         ", Password: " + userPrincipal.getPassword());
-    //     } else {
-    //         return ResponseEntity.badRequest().body("Principal is not of type UserPrincipal");
-    //     }
-    // }
     @PutMapping("/password")
     public ResponseEntity<?> changePassword(
             @Valid @RequestBody PasswordChangeRequestDTO passwordChangeRequest) {
