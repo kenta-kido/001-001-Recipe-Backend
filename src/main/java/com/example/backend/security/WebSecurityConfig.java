@@ -44,6 +44,7 @@ public class WebSecurityConfig {
             .requestMatchers("/auth/login").permitAll()
             .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET, "/recipes", "/recipes/**").permitAll()
+            .requestMatchers("/users/**").hasRole("USER")
             // POST, PUT, DELETEリクエストは認証が必要
             .requestMatchers(HttpMethod.POST, "/recipes", "/recipes/**").hasRole("USER")
             .requestMatchers(HttpMethod.PUT, "/recipes", "/recipes/**").hasRole("USER")

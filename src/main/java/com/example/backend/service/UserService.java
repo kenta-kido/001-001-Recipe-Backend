@@ -7,6 +7,8 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -73,6 +75,28 @@ public class UserService {
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
     }
+
+    
+    public void updatePassword(Long userId, String newPassword) {
+        userRepository.findById(userId).ifPresent(user -> {
+            // パスワードをハッシュ化して設定
+            user.setPassword(passwordEncoder.encode(newPassword));
+    
+            // extraInfo の処理
+            if (user.getExtraInfo() != null && user.getExtraInfo().contains("[Init Pass:")) {
+                user.setExtraInfo(user.getExtraInfo().replaceAll("\\[Init Pass: .*?\\]", "").trim());
+            }
+    
+            // パスワード更新メッセージを追記
+            String updatedInfo = "Password updated on " +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            user.setExtraInfo(updatedInfo);
+    
+            // ユーザー情報を保存
+            userRepository.save(user);
+        });
+    }
+    
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
