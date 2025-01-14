@@ -26,7 +26,6 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -34,7 +33,7 @@ public class UserEntity {
     private String extraInfo;
 
     // Getters and setters
-    @JsonIgnore // シリアライズ時に無視
+    @JsonIgnore 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // リレーションの逆方向
     private List<RecipeEntity> recipes;
 }
