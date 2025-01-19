@@ -1,5 +1,9 @@
 package com.example.backend.entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +20,9 @@ public class UnitEntity {
 
     @Column(nullable = false, unique = true)
     private String unitName;
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true) 
+    @JsonIgnore
+    private List<RecipeIngredientsEntity> recipeIngredients;
+    
 }

@@ -25,4 +25,9 @@ public class IngredientsEntity {
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<IngredientsSynonymEntity> synonyms = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<RecipeIngredientsEntity> recipeIngredients;
 }

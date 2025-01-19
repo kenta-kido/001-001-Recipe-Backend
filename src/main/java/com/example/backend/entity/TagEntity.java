@@ -27,4 +27,8 @@ public class TagEntity {
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TagSynonymEntity> synonyms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TagRecipeEntity> tagRecipes;
 }
