@@ -37,7 +37,11 @@ public class RecipeEntity {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<DescriptionEntity> descriptions;
-    
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true) 
+    @JsonIgnore
+    private List<RecipeIngredientsEntity> recipeIngredients;
+
     // @Column(nullable = false)
     // private Long descriptionId; // Foreign Key for descriptions
 

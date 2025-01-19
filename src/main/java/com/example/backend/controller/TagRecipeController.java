@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/recipes/{recipeId}/tags")
+@RequestMapping("/recipes")
 public class TagRecipeController {
 
     @Autowired
     private TagRecipeService tagRecipeService;
 
     // 特定のレシピに関連付けられたタグを取得
-    @GetMapping
+    @GetMapping("/{recipeId}/tags")
     public List<TagRecipeEntity> getTagsByRecipeId(@PathVariable Long recipeId) {
         return tagRecipeService.getTagsByRecipeId(recipeId);
     }
@@ -28,7 +28,7 @@ public class TagRecipeController {
     }
 
     // レシピにタグを追加
-    @PostMapping("/{tagId}")
+    @PostMapping("/{recipeId}/tags/{tagId}")
     public ResponseEntity<TagRecipeEntity> addTagToRecipe(
             @PathVariable Long recipeId,
             @PathVariable Long tagId
@@ -38,7 +38,7 @@ public class TagRecipeController {
     }
 
     // レシピからタグを削除
-    @DeleteMapping("/{tagRecipeId}")
+    @DeleteMapping("/{recipeId}/tags/{tagRecipeId}")
     public ResponseEntity<Void> removeTagFromRecipe(@PathVariable Long tagRecipeId) {
         tagRecipeService.removeTagFromRecipe(tagRecipeId);
         return ResponseEntity.noContent().build();

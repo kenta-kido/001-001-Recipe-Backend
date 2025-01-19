@@ -63,6 +63,12 @@ public class RecipeController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    
+    @GetMapping("/latest")
+    public ResponseEntity<List<RecipeEntity>> getLatestRecipes() {
+        List<RecipeEntity> latestRecipes = recipeService.getLatestRecipes();
+        return ResponseEntity.ok(latestRecipes);
+    }
 
     // 新しいエンドポイント: レシピIDからPhotoEntityを取得
     @GetMapping("/{id}/photo")
@@ -70,6 +76,25 @@ public class RecipeController {
         return recipeService.getPhotoByRecipeId(id)
                 .map(photo -> ResponseEntity.ok("data:image/jpeg;base64," + photo.getBinaryPhoto()))
                 .orElse(ResponseEntity.notFound().build());
+    }
+    // 検索エンドポイント
+    @GetMapping("/search")
+    public List<RecipeEntity> searchRecipes(@RequestParam String keyword) {
+        return recipeService.findRecipesByKeyword(keyword);
+    }
+    
+    @GetMapping("/search/similarity")
+    public List<RecipeEntity> searchRecipesBySimilarity(
+            @RequestParam(required = false) String ingredientKeyword,
+            @RequestParam(required = false) String tagKeyword
+    ) {
+        if (ingredientKeyword != null) {
+            return recipeService.findRecipesByIngredientNameWithSimilarity(ingredientKeyword);
+        } else if (tagKeyword != null) {
+            return recipeService.findRecipesByTagNameWithSimilarity(tagKeyword);
+        } else {
+            throw new IllegalArgumentException("At least one search parameter is required");
+        }
     }
 
     @PostMapping

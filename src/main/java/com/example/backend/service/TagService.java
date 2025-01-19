@@ -1,7 +1,10 @@
 package com.example.backend.service;
 
 import com.example.backend.entity.TagEntity;
+import com.example.backend.entity.TagSynonymEntity;
 import com.example.backend.repository.TagRepository;
+import com.example.backend.repository.TagSynonymRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,9 @@ public class TagService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private TagSynonymRepository tagSynonymRepository;
 
     // 全てのタグを取得
     public List<TagEntity> getAllTags() {
@@ -31,10 +37,21 @@ public class TagService {
 
     // タグを作成
     public TagEntity createTag(TagEntity tag) {
-        if (tagRepository.findByName(tag.getName()).isPresent()) {
-            throw new RuntimeException("Tag with this name already exists");
+        // タグの重複をチェック
+        if (tagRepository.existsByName(tag.getName())) {
+            throw new RuntimeException("Tag already exists");
         }
-        return tagRepository.save(tag);
+
+        // タグを保存
+        TagEntity savedTag = tagRepository.save(tag);
+
+        // デフォルトのシノニムを登録
+        TagSynonymEntity synonym = new TagSynonymEntity();
+        synonym.setTag(savedTag);
+        synonym.setSynonym(tag.getName()); // デフォルトで名前をシノニムとして使用
+
+        tagSynonymRepository.save(synonym);
+        return savedTag;
     }
 
     // タグを更新

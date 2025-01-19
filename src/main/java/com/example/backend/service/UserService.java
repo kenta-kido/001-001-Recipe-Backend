@@ -47,7 +47,17 @@ public class UserService {
     }
 
     public UserEntity saveUser(UserEntity user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // パスワードをハッシュ化
+        // 既存のユーザーを取得
+        UserEntity existingUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    
+        // パスワードが変更されている場合のみハッシュ化
+        if (!user.getPassword().equals(existingUser.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(existingUser.getPassword()); // 既存のパスワードを保持
+        }
+    
         return userRepository.save(user);
     }
 
