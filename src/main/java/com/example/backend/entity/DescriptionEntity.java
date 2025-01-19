@@ -25,7 +25,7 @@ public class DescriptionEntity {
     @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
     private PhotoEntity photo; // 説明用画像
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String description; // 説明内容
 
     @Column(nullable = false)

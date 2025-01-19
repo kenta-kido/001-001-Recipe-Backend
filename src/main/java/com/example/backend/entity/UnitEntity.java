@@ -20,8 +20,8 @@ public class UnitEntity {
 
     @Column(nullable = false, unique = true)
     private String unitName;
-    
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true) 
+
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true) 
     @JsonIgnore
     private List<RecipeIngredientsEntity> recipeIngredients;
     
