@@ -107,6 +107,11 @@
 			<artifactId>jakarta.validation-api</artifactId>
 			<version>3.0.2</version> <!-- 必要に応じて最新バージョンを確認 -->
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.10.0</version> <!-- 最新バージョンに更新してください -->
+		</dependency>
 <!-- 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

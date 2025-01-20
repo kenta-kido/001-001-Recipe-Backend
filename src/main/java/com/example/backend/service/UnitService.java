@@ -48,4 +48,8 @@ public class UnitService {
 
         unitRepository.delete(unit);
     }
+    public boolean existsByName(String name) {
+        return unitRepository.existsByUnitName(name);
+    }
+    
 }
