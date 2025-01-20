@@ -36,7 +36,7 @@ public class UserService {
             admin.setEmail("admin@kenta.com");
             admin.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
             admin.setRole("ROLE_ADMIN");
-            admin.setExtraInfo("Admin user");
+            admin.setExtraInfo("Admin for Developer");
             userRepository.save(admin);
         }
         if (userRepository.findByEmail("user@kenta.com").isEmpty()) {
@@ -44,7 +44,7 @@ public class UserService {
             user.setEmail("user@kenta.com");
             user.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
             user.setRole("ROLE_USER");
-            user.setExtraInfo("User");
+            user.setExtraInfo("User for Developer");
             userRepository.save(user);
         }
         if (userRepository.findByEmail("admintest@kenta.com").isEmpty()) {
@@ -52,7 +52,7 @@ public class UserService {
             user.setEmail("admintest@kenta.com");
             user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード
             user.setRole("ROLE_ADMIN");
-            user.setExtraInfo("Admin");
+            user.setExtraInfo("Admin for Test");
             userRepository.save(user);
         }
         if (userRepository.findByEmail("usertest@kenta.com").isEmpty()) {
@@ -60,7 +60,7 @@ public class UserService {
             user.setEmail("usertest@kenta.com");
             user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード test
             user.setRole("ROLE_USER");
-            user.setExtraInfo("User");
+            user.setExtraInfo("User for Test");
             userRepository.save(user);
         }
     }
