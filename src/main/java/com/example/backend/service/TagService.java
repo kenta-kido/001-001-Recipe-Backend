@@ -70,4 +70,9 @@ public class TagService {
                 .orElseThrow(() -> new RuntimeException("Tag not found"));
         tagRepository.delete(existingTag);
     }
+    
+    public boolean existsByNameAndCategory(String name, String category) {
+        return tagRepository.existsByNameAndCategory(name, category);
+    }
+    
 }
