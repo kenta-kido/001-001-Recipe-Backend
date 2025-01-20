@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface TagSynonymRepository extends JpaRepository<TagSynonymEntity, Long> {
     List<TagSynonymEntity> findBySynonymContainingIgnoreCase(String synonym);
+    List<TagSynonymEntity> findByTagTagId(Long tagId);
 }
