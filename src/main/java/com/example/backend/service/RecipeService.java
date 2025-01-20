@@ -119,33 +119,33 @@ public class RecipeService {
     private static final double TRIGRAM_SIMILARITY_THRESHOLD = 0.15;
 
     public List<RecipeEntity> findRecipesByKeyword(String keyword) {
-        // 材料名に基づく検索
-        List<RecipeEntity> recipesByIngredient = findRecipesByIngredientNameWithSimilarity(keyword);
-
-        // タグ名に基づく検索
-        List<RecipeEntity> recipesByTag = findRecipesByTagNameWithSimilarity(keyword);
-
-        // タイトルに基づく検索
-        List<RecipeEntity> recipesByTitle = recipeRepository.findByTitleLike(keyword);
-
-        // 材料名によるトライグラム検索
-        List<RecipeEntity> recipesByIngredientTrigram = findRecipesByIngredientTrigram(keyword);
-
-        // タグ名によるトライグラム検索
-        List<RecipeEntity> recipesByTagTrigram = findRecipesByTagTrigram(keyword);
-        
-        // 材料とタグの検索結果をマージし、重複を除外
+        // キーワードを分割
+        String[] keywords = keyword.split("\\s+");
+    
+        // 結果を格納するセット
         Set<RecipeEntity> uniqueRecipes = new HashSet<>();
-        uniqueRecipes.addAll(recipesByIngredient);
-        uniqueRecipes.addAll(recipesByTag);
-        uniqueRecipes.addAll(recipesByTitle);
-        uniqueRecipes.addAll(recipesByIngredientTrigram);
-        uniqueRecipes.addAll(recipesByTagTrigram);
-
-
+    
+        for (String word : keywords) {
+            // 材料名に基づく検索
+            uniqueRecipes.addAll(findRecipesByIngredientNameWithSimilarity(word));
+    
+            // タグ名に基づく検索
+            uniqueRecipes.addAll(findRecipesByTagNameWithSimilarity(word));
+    
+            // 材料名によるトライグラム検索
+            uniqueRecipes.addAll(findRecipesByIngredientTrigram(word));
+    
+            // タグ名によるトライグラム検索
+            uniqueRecipes.addAll(findRecipesByTagTrigram(word));
+    
+            // タイトルに基づく検索（任意）
+            uniqueRecipes.addAll(recipeRepository.findByTitleLike("%" + word + "%"));
+        }
+    
         // 重複を排除したリストを返却
         return new ArrayList<>(uniqueRecipes);
     }
+    
 
     // 材料名とシノニムを活用して類似度の高い材料を検索
     public List<RecipeEntity> findRecipesByIngredientNameWithSimilarity(String keyword) {
