@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface IngredientsSynonymRepository extends JpaRepository<IngredientsSynonymEntity, Long> {
     List<IngredientsSynonymEntity> findBySynonymContainingIgnoreCase(String synonym);
+    List<IngredientsSynonymEntity> findByIngredientIngredientId(Long ingredientId);
 }
