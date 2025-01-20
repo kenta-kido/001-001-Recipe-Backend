@@ -2,6 +2,7 @@ package com.example.backend.security;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,16 +14,16 @@ import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
     private final UserService userService;
+
+    public CustomUserDetailService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userService.findByEmail(username).orElseThrow();    
-        // デバッグログを追加
-        System.out.println("Email: " + user.getEmail());
-        System.out.println("Password from database: " + user.getPassword());
         return UserPrincipal.builder()
                 .userId(user.getId())
                 .email(user.getEmail())

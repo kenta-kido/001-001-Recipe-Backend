@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,16 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // private String adminDefaultPassword = "local";
+    @Value("${admin.default.password}")
+    private String adminDefaultPassword;
     @PostConstruct
     public void initAdminUser() {
         if (userRepository.findByEmail("kenta@kenta.com").isEmpty()) {
             UserEntity admin = new UserEntity();
             admin.setEmail("kenta@kenta.com");
-            admin.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード
+            admin.setPassword(passwordEncoder.encode(adminDefaultPassword)); // ハッシュ化されたパスワード
+            // admin.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
             admin.setRole("ROLE_ADMIN");
             admin.setExtraInfo("Admin user");
             userRepository.save(admin);
@@ -35,7 +40,15 @@ public class UserService {
         if (userRepository.findByEmail("user@kenta.com").isEmpty()) {
             UserEntity user = new UserEntity();
             user.setEmail("user@kenta.com");
-            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード
+            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
+            user.setRole("ROLE_USER");
+            user.setExtraInfo("User");
+            userRepository.save(user);
+        }
+        if (userRepository.findByEmail("test@kenta.com").isEmpty()) {
+            UserEntity user = new UserEntity();
+            user.setEmail("test@kenta.com");
+            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
             user.setRole("ROLE_USER");
             user.setExtraInfo("User");
             userRepository.save(user);
