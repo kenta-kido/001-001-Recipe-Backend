@@ -23,16 +23,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // private String adminDefaultPassword = "local";
-    @Value("${admin.default.password}")
-    private String adminDefaultPassword;
+    // private String devDefaultPassword = "local";
+    // private String testDefaultPassword = "local";
+    @Value("${dev.default.password}")
+    private String devDefaultPassword;
+    @Value("${test.default.password}")
+    private String testDefaultPassword;
     @PostConstruct
     public void initAdminUser() {
-        if (userRepository.findByEmail("kenta@kenta.com").isEmpty()) {
+        if (userRepository.findByEmail("admin@kenta.com").isEmpty()) {
             UserEntity admin = new UserEntity();
-            admin.setEmail("kenta@kenta.com");
-            admin.setPassword(passwordEncoder.encode(adminDefaultPassword)); // ハッシュ化されたパスワード
-            // admin.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
+            admin.setEmail("admin@kenta.com");
+            admin.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
             admin.setRole("ROLE_ADMIN");
             admin.setExtraInfo("Admin user");
             userRepository.save(admin);
@@ -40,15 +42,23 @@ public class UserService {
         if (userRepository.findByEmail("user@kenta.com").isEmpty()) {
             UserEntity user = new UserEntity();
             user.setEmail("user@kenta.com");
-            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
+            user.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
             user.setRole("ROLE_USER");
             user.setExtraInfo("User");
             userRepository.save(user);
         }
-        if (userRepository.findByEmail("test@kenta.com").isEmpty()) {
+        if (userRepository.findByEmail("admintest@kenta.com").isEmpty()) {
             UserEntity user = new UserEntity();
-            user.setEmail("test@kenta.com");
-            user.setPassword("$2a$12$OBnerD3ZrnkqY/ofkaxune1jnpUscFhTGCcuVA9x5lgAGAtr6Bss2"); // ハッシュ化されたパスワード test
+            user.setEmail("admintest@kenta.com");
+            user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード
+            user.setRole("ROLE_ADMIN");
+            user.setExtraInfo("Admin");
+            userRepository.save(user);
+        }
+        if (userRepository.findByEmail("usertest@kenta.com").isEmpty()) {
+            UserEntity user = new UserEntity();
+            user.setEmail("usertest@kenta.com");
+            user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード test
             user.setRole("ROLE_USER");
             user.setExtraInfo("User");
             userRepository.save(user);
