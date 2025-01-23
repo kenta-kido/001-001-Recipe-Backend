@@ -1,1 +1,3 @@
-deploy: git push heroku main
+deploy
+1. commit changes, change user pass to environment variable
+2. git push heroku main
