@@ -28,7 +28,7 @@ jobs:
         run: mvn test  # テストを実行
 
       - name: Deploy to Heroku
-        uses: akshnz/heroku-deploy-action@v1
+        uses: akhileshns/heroku-deploy@v3.12.12 # This action deploys the content on Heroku
         with:
           heroku_api_key: 'HRKU-f2cb3fb2-918c-4c05-800a-3c99cc918eaa'
           heroku_app_name: 'morning-temple-77648'
