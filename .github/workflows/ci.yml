@@ -27,6 +27,11 @@ jobs:
         with:
           java-version: '17'  # Java 17を指定
           distribution: 'temurin'
+          
+      - name: Check Database Connection
+        run: |
+          echo "Checking database connection..."
+          curl -X GET $DATABASE_URL
 
       - name: Build with Maven
         run: mvn clean install  # Mavenを使用したビルドコマンド
