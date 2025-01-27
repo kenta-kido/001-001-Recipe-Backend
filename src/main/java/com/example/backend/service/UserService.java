@@ -23,12 +23,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    private String devDefaultPassword = "local";
-    private String testDefaultPassword = "local";
-    // @Value("${dev.default.password}")
-    // private String devDefaultPassword;
-    // @Value("${test.default.password}")
-    // private String testDefaultPassword;
+    // private String devDefaultPassword = "local";
+    // private String testDefaultPassword = "local";
+    @Value("${dev.default.password}")
+    private String devDefaultPassword;
+    @Value("${test.default.password}")
+    private String testDefaultPassword;
     @PostConstruct
     public void initAdminUser() {
         if (userRepository.findByEmail("admin@kenta.com").isEmpty()) {
