@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # 使用するJavaのバージョンを指定
+
+      - name: Build with Maven
+        run: mvn clean install  # Mavenを使用したビルドコマンド
+
+      - name: Run Tests
+        run: mvn test  # テストを実行
+
+      - name: Deploy to Heroku
+        uses: akshnz/heroku-deploy-action@v1
+        with:
+          heroku_api_key: 'HRKU-f2cb3fb2-918c-4c05-800a-3c99cc918eaa'
+          heroku_app_name: 'morning-temple-77648'
+          heroku_email: 'kido.0117.1895@gmail.com'
