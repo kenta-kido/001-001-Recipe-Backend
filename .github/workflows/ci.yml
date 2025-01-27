@@ -19,7 +19,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          java-version: '17'  # 使用するJavaのバージョンを指定
+          java-version: '17'  # Java 17を指定
+          distribution: 'adoptopenjdk'  # adoptopenjdkディストリビューションを指定
 
       - name: Build with Maven
         run: mvn clean install  # Mavenを使用したビルドコマンド
