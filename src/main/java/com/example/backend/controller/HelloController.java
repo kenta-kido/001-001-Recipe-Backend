@@ -6,6 +6,7 @@ import com.example.backend.security.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequiredArgsConstructor
 public class HelloController {
+    @Value("${test.default.password}")
+    private String testDefaultPassword;
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/greeting")
     public String greeting() {
-        return "Hello test, Heroku Auto Deploy";
+        return "Hello test, Heroku Auto Deploy, test env: " + testDefaultPassword;
     }
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/secured")
