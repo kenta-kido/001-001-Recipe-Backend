@@ -19,7 +19,7 @@ public class HelloController {
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/greeting")
     public String greeting() {
-        return "Hello test, Heroku CICD";
+        return "Hello test, Heroku Auto Deploy";
     }
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/secured")
