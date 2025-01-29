@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;  // MockMvc class for simulating HTTP requests
 import org.springframework.beans.factory.annotation.Autowired;  // For dependency injection from Spring container
 import org.springframework.test.context.junit.jupiter.SpringExtension;  // SpringExtension for JUnit 5 integration
