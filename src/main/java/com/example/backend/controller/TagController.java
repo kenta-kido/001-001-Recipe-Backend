@@ -5,7 +5,6 @@ import com.example.backend.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -16,13 +15,22 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    // 全てのタグを取得
+    /**
+     * Fetch all tags.
+     *
+     * @return A list of all TagEntity objects.
+     */
     @GetMapping
     public List<TagEntity> getAllTags() {
         return tagService.getAllTags();
     }
 
-    // IDでタグを取得
+    /**
+     * Fetch a tag by its ID.
+     *
+     * @param id The ID of the tag to retrieve.
+     * @return A ResponseEntity containing the TagEntity if found, or a 404 response if not found.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<TagEntity> getTagById(@PathVariable Long id) {
         return tagService.getTagById(id)
@@ -30,7 +38,12 @@ public class TagController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // タグを作成
+    /**
+     * Create a new tag.
+     *
+     * @param tag The TagEntity object containing the details of the tag to create.
+     * @return A ResponseEntity containing the created TagEntity, or a 400 response if creation fails.
+     */
     @PostMapping
     public ResponseEntity<TagEntity> createTag(@RequestBody TagEntity tag) {
         try {
@@ -41,7 +54,13 @@ public class TagController {
         }
     }
 
-    // タグを更新
+    /**
+     * Update an existing tag by its ID.
+     *
+     * @param id         The ID of the tag to update.
+     * @param tagDetails The updated TagEntity object containing new tag details.
+     * @return A ResponseEntity containing the updated TagEntity, or a 404 response if the tag is not found.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<TagEntity> updateTag(
             @PathVariable Long id,
@@ -55,7 +74,12 @@ public class TagController {
         }
     }
 
-    // タグを削除
+    /**
+     * Delete a tag by its ID.
+     *
+     * @param id The ID of the tag to delete.
+     * @return A ResponseEntity with no content upon successful deletion, or a 404 response if the tag is not found.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
         try {

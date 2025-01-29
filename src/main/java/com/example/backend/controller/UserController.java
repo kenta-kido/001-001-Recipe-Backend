@@ -24,16 +24,23 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Update the authenticated user's email and additional information.
+     *
+     * @param currentUser     The currently authenticated user.
+     * @param userRequestDTO  A DTO containing the fields to update (email, extraInfo).
+     * @return A ResponseEntity containing the updated UserResponseDTO.
+     */
     @PutMapping("/email")
     public ResponseEntity<?> updateUserInfo(
             @AuthenticationPrincipal UserPrincipal currentUser,
             @Valid @RequestBody UserRequestDTO userRequestDTO) {
 
-        // 自身の情報を取得
+        // Retrieve the current user's details from the database
         UserEntity userEntity = userService.getUserById(currentUser.getUserId())
                                            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 更新可能なフィールドのみを更新
+        // Update mutable fields
         if (userRequestDTO.getExtraInfo() != null) {
             userEntity.setExtraInfo(userRequestDTO.getExtraInfo());
         }
@@ -41,13 +48,19 @@ public class UserController {
             userEntity.setEmail(userRequestDTO.getEmail());
         }
 
-        // 更新処理
+        // Save the updated user information
         UserEntity updatedUser = userService.saveUser(userEntity);
 
-        // レスポンスDTOに変換して返す
+        // Convert the updated entity to a DTO and return it
         return ResponseEntity.ok(convertToResponseDTO(updatedUser));
     }
 
+    /**
+     * Convert a UserEntity to a UserResponseDTO.
+     *
+     * @param user The UserEntity to convert.
+     * @return The corresponding UserResponseDTO.
+     */
     private UserResponseDTO convertToResponseDTO(UserEntity user) {
         UserResponseDTO responseDTO = new UserResponseDTO();
         responseDTO.setId(user.getId());
@@ -57,31 +70,42 @@ public class UserController {
         return responseDTO;
     }
 
+    /**
+     * Change the authenticated user's password.
+     *
+     * @param passwordChangeRequest A DTO containing the current and new passwords.
+     * @return A ResponseEntity indicating success or failure.
+     */
     @PutMapping("/password")
     public ResponseEntity<?> changePassword(
             @Valid @RequestBody PasswordChangeRequestDTO passwordChangeRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).body("User is not authenticated");
+        }
+
+        // Retrieve the email from the current user's principal
+        String email = ((UserPrincipal) authentication.getPrincipal()).getEmail();
+
+        // Fetch the user from the database
+        UserEntity user = userService.findByEmail(email)
+                                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Verify the current password
+        if (!passwordEncoder.matches(passwordChangeRequest.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("Current password is incorrect");
+        }
+
+        // Update the password
+        userService.updatePassword(user.getId(), passwordChangeRequest.getNewPassword());
+        return ResponseEntity.ok().body("Password updated successfully");
     }
 
-    // Principal からメールアドレスを取得
-    String email = ((UserPrincipal) authentication.getPrincipal()).getEmail();
-
-    // データベースからユーザーを取得
-    UserEntity user = userService.findByEmail(email)
-                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-    // パスワードの一致を確認
-    if (!passwordEncoder.matches(passwordChangeRequest.getCurrentPassword(), user.getPassword())) {
-        return ResponseEntity.badRequest().body("Current password is incorrect");
-    }
-
-    // パスワードを更新
-    userService.updatePassword(user.getId(), passwordChangeRequest.getNewPassword());
-    return ResponseEntity.ok().body("Password updated successfully");
-}
-    // データベース内のパスワードの確認エンドポイント
+    /**
+     * Debugging endpoint to retrieve the authenticated user's password stored in the database.
+     *
+     * @return A ResponseEntity containing the user's hashed password.
+     */
     @GetMapping("/db-password")
     public ResponseEntity<?> getDatabasePassword() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -89,11 +113,11 @@ public class UserController {
             return ResponseEntity.status(401).body("User is not authenticated");
         }
 
-        // Principal から email を取得
+        // Retrieve the email from the current user's principal
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         String email = userPrincipal.getUsername();
 
-        // データベースから UserEntity を取得
+        // Fetch the user from the database
         UserEntity userEntity = userService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

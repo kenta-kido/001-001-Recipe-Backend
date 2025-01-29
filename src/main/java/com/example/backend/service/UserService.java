@@ -8,96 +8,126 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.Optional;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Service for managing users.
+ * This service provides CRUD operations for {@link UserEntity} and handles user authentication and password encryption.
+ */
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // PasswordEncoder を注入
+    private final PasswordEncoder passwordEncoder; 
 
     public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // private String devDefaultPassword = "local";
-    // private String testDefaultPassword = "local";
     @Value("${dev.default.password}")
     private String devDefaultPassword;
+
     @Value("${test.default.password}")
     private String testDefaultPassword;
+
+    /**
+     * Initializes default admin and user accounts if they do not exist.
+     * This method is automatically executed after dependency injection.
+     */
     @PostConstruct
     public void initAdminUser() {
-        if (userRepository.findByEmail("admin@kenta.com").isEmpty()) {
-            UserEntity admin = new UserEntity();
-            admin.setEmail("admin@kenta.com");
-            admin.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
-            admin.setRole("ROLE_ADMIN");
-            admin.setExtraInfo("Admin for Developer");
-            userRepository.save(admin);
-        }
-        if (userRepository.findByEmail("user@kenta.com").isEmpty()) {
+        createDefaultUser("admin@kenta.com", devDefaultPassword, "ROLE_ADMIN", "Admin for Developer");
+        createDefaultUser("user@kenta.com", devDefaultPassword, "ROLE_USER", "User for Developer");
+        createDefaultUser("admintest@kenta.com", testDefaultPassword, "ROLE_ADMIN", "Admin for Test");
+        createDefaultUser("usertest@kenta.com", testDefaultPassword, "ROLE_USER", "User for Test");
+    }
+
+    /**
+     * Creates a default user if they do not exist in the database.
+     *
+     * @param email The email of the user.
+     * @param password The default password.
+     * @param role The user role.
+     * @param extraInfo Additional information about the user.
+     */
+    private void createDefaultUser(String email, String password, String role, String extraInfo) {
+        if (userRepository.findByEmail(email).isEmpty()) {
             UserEntity user = new UserEntity();
-            user.setEmail("user@kenta.com");
-            user.setPassword(passwordEncoder.encode(devDefaultPassword)); // ハッシュ化されたパスワード
-            user.setRole("ROLE_USER");
-            user.setExtraInfo("User for Developer");
-            userRepository.save(user);
-        }
-        if (userRepository.findByEmail("admintest@kenta.com").isEmpty()) {
-            UserEntity user = new UserEntity();
-            user.setEmail("admintest@kenta.com");
-            user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード
-            user.setRole("ROLE_ADMIN");
-            user.setExtraInfo("Admin for Test");
-            userRepository.save(user);
-        }
-        if (userRepository.findByEmail("usertest@kenta.com").isEmpty()) {
-            UserEntity user = new UserEntity();
-            user.setEmail("usertest@kenta.com");
-            user.setPassword(passwordEncoder.encode(testDefaultPassword)); // ハッシュ化されたパスワード test
-            user.setRole("ROLE_USER");
-            user.setExtraInfo("User for Test");
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode(password)); 
+            user.setRole(role);
+            user.setExtraInfo(extraInfo);
             userRepository.save(user);
         }
     }
 
+    /**
+     * Finds a user by their email.
+     *
+     * @param email The email of the user.
+     * @return An {@link Optional} containing the {@link UserEntity} if found.
+     */
     public Optional<UserEntity> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    /**
+     * Saves or updates a user.
+     * If the password has changed, it is hashed before saving.
+     *
+     * @param user The user entity to save.
+     * @return The saved {@link UserEntity}.
+     * @throws RuntimeException if the user does not exist.
+     */
     public UserEntity saveUser(UserEntity user) {
-        // 既存のユーザーを取得
         UserEntity existingUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-    
-        // パスワードが変更されている場合のみハッシュ化
+
+        // Hash the password only if it has been changed
         if (!user.getPassword().equals(existingUser.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
-            user.setPassword(existingUser.getPassword()); // 既存のパスワードを保持
+            user.setPassword(existingUser.getPassword()); 
         }
-    
+
         return userRepository.save(user);
     }
 
+    /**
+     * Retrieves all users from the database.
+     *
+     * @return A list of all {@link UserEntity} objects.
+     */
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id The ID of the user.
+     * @return An {@link Optional} containing the {@link UserEntity} if found.
+     */
     public Optional<UserEntity> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
+    /**
+     * Updates user information.
+     * If the password has changed, it is hashed before saving.
+     *
+     * @param id The ID of the user to update.
+     * @param updatedUser The updated user details.
+     * @return The updated {@link UserEntity}.
+     * @throws RuntimeException if the user is not found.
+     */
     public UserEntity updateUser(Long id, UserEntity updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setEmail(updatedUser.getEmail());
-                    
-                    // パスワードが変更される場合のみハッシュ化
+
+                    // Hash the password only if it has changed
                     if (!updatedUser.getPassword().equals(user.getPassword())) {
                         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     }
@@ -109,27 +139,33 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
     }
 
-    
+    /**
+     * Updates a user's password.
+     *
+     * @param userId The ID of the user.
+     * @param newPassword The new password.
+     */
     public void updatePassword(Long userId, String newPassword) {
         userRepository.findById(userId).ifPresent(user -> {
-            // パスワードをハッシュ化して設定
             user.setPassword(passwordEncoder.encode(newPassword));
-    
-            // extraInfo の処理
+
+            // Remove any existing initial password info
             if (user.getExtraInfo() != null && user.getExtraInfo().contains("[Init Pass:")) {
                 user.setExtraInfo(user.getExtraInfo().replaceAll("\\[Init Pass: .*?\\]", "").trim());
             }
-    
-            // パスワード更新メッセージを追記
-            String updatedInfo = "Password updated by user";
-            user.setExtraInfo(updatedInfo);
-    
-            // ユーザー情報を保存
+
+            // Append password update information
+            user.setExtraInfo("Password updated by user");
+
             userRepository.save(user);
         });
     }
-    
 
+    /**
+     * Deletes a user by their ID.
+     *
+     * @param id The ID of the user to delete.
+     */
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

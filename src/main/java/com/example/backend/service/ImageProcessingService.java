@@ -1,44 +1,55 @@
 package com.example.backend.service;
 
 import net.coobird.thumbnailator.Thumbnails;
-import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.Imaging;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Base64;
 
+/**
+ * Service for processing images.
+ * This service handles image resizing, format conversion (HEIC to JPEG), 
+ * and Base64 encoding for storage or transmission.
+ */
 @Service
 public class ImageProcessingService {
 
+    /**
+     * Processes an image by converting it to JPEG, resizing it, and encoding it in Base64.
+     * Supports HEIC format conversion using Apache Commons Imaging.
+     *
+     * @param file The uploaded image file.
+     * @return A Base64-encoded string representing the processed image.
+     * @throws Exception If the image format is invalid or processing fails.
+     */
     public String processImage(MultipartFile file) throws Exception {
-        // 入力ファイルをInputStreamとして読み込む
+        // Read input file as InputStream
         InputStream inputStream = file.getInputStream();
         BufferedImage image;
 
-        // HEICの場合の処理
+        // Handle HEIC format conversion
         if (file.getOriginalFilename() != null && file.getOriginalFilename().toLowerCase().endsWith(".heic")) {
-            image = Imaging.getBufferedImage(inputStream); // HEICをBufferedImageに変換
+            image = Imaging.getBufferedImage(inputStream); // Convert HEIC to BufferedImage
         } else {
-            image = ImageIO.read(inputStream); // HEIC以外の形式（PNG, JPEGなど）を読み込む
+            image = ImageIO.read(inputStream); // Read other formats (PNG, JPEG, etc.)
         }
 
         if (image == null) {
             throw new Exception("Invalid image format");
         }
 
-        // 画像を縮小してJPEG形式に変換
+        // Resize image and convert to JPEG format
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(image)
-                .size(1200, 800) // 最大サイズを設定
-                .outputFormat("jpeg") // JPEGに変換
+                .size(1200, 800) // Set maximum size
+                .outputFormat("jpeg") // Convert to JPEG
                 .toOutputStream(outputStream);
 
-        // Base64エンコード
+        // Encode the image in Base64
         byte[] jpegBytes = outputStream.toByteArray();
         return Base64.getEncoder().encodeToString(jpegBytes);
     }

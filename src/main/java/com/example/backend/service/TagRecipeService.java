@@ -8,9 +8,12 @@ import com.example.backend.repository.TagRecipeRepository;
 import com.example.backend.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
+/**
+ * Service for managing the relationship between recipes and tags.
+ * This service provides CRUD operations for {@link TagRecipeEntity}.
+ */
 @Service
 public class TagRecipeService {
 
@@ -23,17 +26,34 @@ public class TagRecipeService {
     @Autowired
     private TagRepository tagRepository;
 
-    // 特定のレシピに関連付けられたタグを取得
+    /**
+     * Retrieves all tags associated with a specific recipe.
+     *
+     * @param recipeId The ID of the recipe.
+     * @return A list of {@link TagRecipeEntity} associated with the given recipe.
+     */
     public List<TagRecipeEntity> getTagsByRecipeId(Long recipeId) {
         return tagRecipeRepository.findByRecipeRecipeId(recipeId);
     }
 
-    // 特定のタグに関連付けられたレシピを取得
+    /**
+     * Retrieves all recipes associated with a specific tag.
+     *
+     * @param tagId The ID of the tag.
+     * @return A list of {@link TagRecipeEntity} associated with the given tag.
+     */
     public List<TagRecipeEntity> getRecipesByTagId(Long tagId) {
         return tagRecipeRepository.findByTagTagId(tagId);
     }
 
-    // レシピにタグを追加
+    /**
+     * Adds a tag to a recipe by creating a relationship between them.
+     *
+     * @param recipeId The ID of the recipe.
+     * @param tagId The ID of the tag.
+     * @return The saved {@link TagRecipeEntity} representing the relationship.
+     * @throws RuntimeException if the recipe or tag is not found.
+     */
     public TagRecipeEntity addTagToRecipe(Long recipeId, Long tagId) {
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("Recipe not found"));
@@ -48,7 +68,12 @@ public class TagRecipeService {
         return tagRecipeRepository.save(tagRecipe);
     }
 
-    // レシピからタグを削除
+    /**
+     * Removes a tag from a recipe by deleting the relationship.
+     *
+     * @param tagRecipeId The ID of the {@link TagRecipeEntity} to delete.
+     * @throws RuntimeException if the relationship is not found.
+     */
     public void removeTagFromRecipe(Long tagRecipeId) {
         TagRecipeEntity tagRecipe = tagRecipeRepository.findById(tagRecipeId)
                 .orElseThrow(() -> new RuntimeException("TagRecipe not found"));

@@ -2,62 +2,94 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+/**
+ * Entity representing a recipe.
+ * This entity stores details about a recipe, including its title, user, photo, ingredients, and tags.
+ */
 @Entity
 @Getter
 @Setter
 @Table(name = "Recipe")
 public class RecipeEntity {
 
+    /**
+     * The unique identifier for the recipe.
+     * Primary Key, auto-generated.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long recipeId; // Primary Key
+    private Long recipeId;
 
-    @ManyToOne // Many Recipes belong to one User
-    @JoinColumn(name = "user_id", nullable = false) // 外部キーを指定
-    private UserEntity user; // リレーションとして設定
-    
- 
-    @OneToOne(cascade = CascadeType.ALL) // 1つのRecipeが1つのPhotoを持つ
+    /**
+     * The user who created the recipe.
+     * Many recipes can belong to one user.
+     */
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false) // Foreign key reference to UserEntity
+    private UserEntity user;
+
+    /**
+     * The photo associated with this recipe.
+     * Each recipe can have one thumbnail image.
+     */
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "photo_id", referencedColumnName = "photoId", nullable = true)
-    private PhotoEntity photo; // サムネイル画像用リレーション
-    
-    @Column(nullable = false, length = 255)
-    private String title; // レシピのタイトル
+    private PhotoEntity photo;
 
+    /**
+     * The title of the recipe.
+     * Cannot be null and has a maximum length of 255 characters.
+     */
+    @Column(nullable = false, length = 255)
+    private String title;
+
+    /**
+     * A list of descriptions (steps) associated with this recipe.
+     * Cascade operations ensure that all descriptions are removed when the recipe is deleted.
+     */
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<DescriptionEntity> descriptions;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true) 
-    @JsonIgnore
-    private List<RecipeIngredientsEntity> recipeIngredients;
-    
+    /**
+     * A list of ingredients used in this recipe.
+     * Cascade operations ensure that all ingredient relations are removed when the recipe is deleted.
+     */
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<TagRecipeEntity> tagRecipes; // タグリスト
-    // @Column(nullable = false)
-    // private Long descriptionId; // Foreign Key for descriptions
+    private List<RecipeIngredientsEntity> recipeIngredients;
 
+    /**
+     * A list of tags associated with this recipe.
+     * Cascade operations ensure that all tag relations are removed when the recipe is deleted.
+     */
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TagRecipeEntity> tagRecipes;
+
+    /**
+     * The timestamp indicating when the recipe was created or last updated.
+     * Automatically set before saving or updating the entity.
+     */
     @Column(nullable = false)
-    private LocalDateTime timestamp; // Timestamp
+    private LocalDateTime timestamp;
 
-    // 保存前にタイムスタンプを現在時刻に設定
+    /**
+     * Sets the timestamp before inserting a new record.
+     */
     @PrePersist
     protected void onCreate() {
         this.timestamp = LocalDateTime.now();
     }
 
-    // 必要なら更新時にもタイムスタンプを変更
+    /**
+     * Updates the timestamp before updating an existing record.
+     */
     @PreUpdate
     protected void onUpdate() {
         this.timestamp = LocalDateTime.now();

@@ -16,13 +16,24 @@ public class RecipeIngredientsController {
     @Autowired
     private RecipeIngredientsService recipeIngredientsService;
 
-    // 特定のレシピに関連する材料を取得
+    /**
+     * Fetch all ingredients associated with a specific recipe.
+     *
+     * @param recipeId The ID of the recipe whose ingredients are to be retrieved.
+     * @return A list of RecipeIngredientsEntity objects associated with the recipe.
+     */
     @GetMapping
     public List<RecipeIngredientsEntity> getIngredientsByRecipeId(@PathVariable Long recipeId) {
         return recipeIngredientsService.getIngredientsByRecipeId(recipeId);
     }
 
-    // 特定のレシピに材料を追加
+    /**
+     * Add a new ingredient to a specific recipe.
+     *
+     * @param recipeId         The ID of the recipe to which the ingredient will be added.
+     * @param recipeIngredient The RecipeIngredientsEntity object representing the new ingredient.
+     * @return A ResponseEntity containing the created RecipeIngredientsEntity object.
+     */
     @PostMapping
     public ResponseEntity<RecipeIngredientsEntity> addIngredientToRecipe(
             @PathVariable Long recipeId,
@@ -32,7 +43,13 @@ public class RecipeIngredientsController {
         return ResponseEntity.ok(createdIngredient);
     }
 
-    // 特定の材料を更新
+    /**
+     * Update an existing ingredient associated with a recipe.
+     *
+     * @param id              The ID of the ingredient to update.
+     * @param updatedIngredient The updated RecipeIngredientsEntity object.
+     * @return A ResponseEntity containing the updated RecipeIngredientsEntity object.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<RecipeIngredientsEntity> updateIngredient(
             @PathVariable Long id,
@@ -42,7 +59,12 @@ public class RecipeIngredientsController {
         return ResponseEntity.ok(updated);
     }
 
-    // 特定の材料を削除
+    /**
+     * Delete an ingredient by its ID.
+     *
+     * @param id The ID of the ingredient to delete.
+     * @return A ResponseEntity with no content upon successful deletion.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIngredient(@PathVariable Long id) {
         recipeIngredientsService.deleteIngredient(id);

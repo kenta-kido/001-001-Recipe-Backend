@@ -20,7 +20,7 @@ public class AdminUserController {
 
     private final UserService userService;
 
-    // ユーザー一覧の取得
+    // Fetch a list of all users
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -29,7 +29,7 @@ public class AdminUserController {
         return users.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
 
-    // IDでユーザーを取得
+    // Fetch a user by their ID
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -39,7 +39,7 @@ public class AdminUserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ユーザーの作成
+    // Create a new user
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -49,7 +49,7 @@ public class AdminUserController {
         return ResponseEntity.ok(convertToResponseDTO(createdUser));
     }
 
-    // ユーザーの編集
+    // Update an existing user's information
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -59,7 +59,7 @@ public class AdminUserController {
         return ResponseEntity.ok(convertToResponseDTO(updatedUser));
     }
 
-    // ユーザーの削除
+    // Delete a user by their ID
     @CrossOrigin(origins = {"http://localhost:3000", "https://portfolio-kenta-926ed757a371.herokuapp.com"})
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -68,7 +68,7 @@ public class AdminUserController {
         return ResponseEntity.noContent().build();
     }
 
-    // Entity -> ResponseDTO の変換
+    // Convert UserEntity to UserResponseDTO
     private UserResponseDTO convertToResponseDTO(UserEntity user) {
         UserResponseDTO responseDTO = new UserResponseDTO();
         responseDTO.setId(user.getId());
@@ -78,11 +78,11 @@ public class AdminUserController {
         return responseDTO;
     }
 
-    // RequestDTO -> Entity の変換
+    // Convert UserRequestDTO to UserEntity
     private UserEntity convertToEntity(UserRequestDTO userRequestDTO) {
         UserEntity user = new UserEntity();
         user.setEmail(userRequestDTO.getEmail());
-        user.setPassword(userRequestDTO.getPassword()); // サービス層でハッシュ化
+        user.setPassword(userRequestDTO.getPassword()); // Hashing handled in the service layer
         user.setRole(userRequestDTO.getRole());
         user.setExtraInfo(userRequestDTO.getExtraInfo());
         return user;

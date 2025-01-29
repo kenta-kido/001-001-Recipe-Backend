@@ -15,16 +15,27 @@ public class ImageController {
     @Autowired
     private ImageProcessingService imageProcessingService;
 
+    /**
+     * Endpoint to process an uploaded image.
+     * Accepts an image file as input, processes it, and returns the processed image
+     * as a Base64 encoded string.
+     *
+     * @param file The uploaded image file sent as a multipart request.
+     * @return A ResponseEntity containing the Base64 encoded image if successful,
+     *         or an error message if the processing fails.
+     */
     @PostMapping("/process")
     public ResponseEntity<String> processImage(@RequestPart("file") MultipartFile file) {
+        // Check if the file is empty and return a 400 Bad Request if true
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Empty file provided");
         }
         try {
-            // 画像を処理してBase64を取得
+            // Process the image and retrieve the Base64 encoded result
             String base64Image = imageProcessingService.processImage(file);
             return ResponseEntity.ok(base64Image);
         } catch (Exception e) {
+            // Handle errors during image processing and return a 500 Internal Server Error
             return ResponseEntity.status(500).body("Error processing image: " + e.getMessage());
         }
     }

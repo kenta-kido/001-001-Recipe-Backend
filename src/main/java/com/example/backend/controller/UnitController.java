@@ -5,7 +5,6 @@ import com.example.backend.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -16,13 +15,22 @@ public class UnitController {
     @Autowired
     private UnitService unitService;
 
-    // 全てのユニットを取得
+    /**
+     * Fetch all units.
+     *
+     * @return A list of all UnitEntity objects.
+     */
     @GetMapping
     public List<UnitEntity> getAllUnits() {
         return unitService.getAllUnits();
     }
 
-    // 特定のユニットを取得
+    /**
+     * Fetch a specific unit by its ID.
+     *
+     * @param id The ID of the unit to retrieve.
+     * @return A ResponseEntity containing the UnitEntity if found, or a 404 response if not found.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<UnitEntity> getUnitById(@PathVariable Long id) {
         return unitService.getUnitById(id)
@@ -30,7 +38,12 @@ public class UnitController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 新しいユニットを作成
+    /**
+     * Create a new unit.
+     *
+     * @param unit The UnitEntity object containing the details of the unit to create.
+     * @return A ResponseEntity containing the created UnitEntity, or a 400 response if creation fails.
+     */
     @PostMapping
     public ResponseEntity<UnitEntity> createUnit(@RequestBody UnitEntity unit) {
         try {
@@ -41,7 +54,13 @@ public class UnitController {
         }
     }
 
-    // ユニットを更新
+    /**
+     * Update an existing unit by its ID.
+     *
+     * @param id          The ID of the unit to update.
+     * @param unitDetails The updated UnitEntity object containing new unit details.
+     * @return A ResponseEntity containing the updated UnitEntity, or a 404 response if the unit is not found.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<UnitEntity> updateUnit(
             @PathVariable Long id,
@@ -55,7 +74,12 @@ public class UnitController {
         }
     }
 
-    // ユニットを削除
+    /**
+     * Delete a unit by its ID.
+     *
+     * @param id The ID of the unit to delete.
+     * @return A ResponseEntity with no content upon successful deletion, or a 404 response if the unit is not found.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUnit(@PathVariable Long id) {
         try {
