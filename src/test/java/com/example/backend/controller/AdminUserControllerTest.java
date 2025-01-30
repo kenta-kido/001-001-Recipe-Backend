@@ -13,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;  // Spring annota
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;  // Automatically configure MockMvc for testing
 import org.springframework.boot.test.context.SpringBootTest;  // Spring Boot test annotation to load the application context
 import org.springframework.boot.test.mock.mockito.MockBean;  // For mocking beans in the Spring context
-import org.springframework.http.HttpStatus;  // HTTP status codes
 import org.springframework.security.test.context.support.WithMockUser;  // Mock a user for security context
 import org.springframework.test.web.servlet.MockMvc;  // MockMvc class to simulate HTTP requests
 import org.springframework.test.context.junit.jupiter.SpringExtension;  // JUnit 5 integration for Spring
 import com.example.backend.entity.UserEntity;  // User entity class
 import com.example.backend.service.UserService;  // Service class to be mocked
 import com.example.backend.dto.UserRequestDTO;  // DTO for user response
-import com.example.backend.dto.UserResponseDTO;  // DTO for user response
 import java.util.Optional;  // Optional for handling null values
 import java.util.Collections;  // For working with collections like lists
 
